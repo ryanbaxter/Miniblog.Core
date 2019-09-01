@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net.Mail;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
@@ -23,6 +24,20 @@ namespace Miniblog.Core.Controllers
             _blog = blog;
             _settings = settings;
             _manifest = manifest;
+        }
+
+        [Route("/about")]
+        [OutputCache(Profile = "default")]
+        public IActionResult About()
+        {
+            return View("~/Views/Blog/About.cshtml");
+        }
+
+        [Route("/contact")]
+        [OutputCache(Profile = "default")]
+        public IActionResult Contact()
+        {
+            return View("~/Views/Blog/Contact.cshtml");
         }
 
         [Route("/{page:int?}")]
@@ -92,6 +107,31 @@ namespace Miniblog.Core.Controllers
             return NotFound();
         }
 
+        [Route("/contact")]
+        [HttpPost]
+        public IActionResult Contact(Contact contact)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View("Contact", contact);
+            }
+
+            try
+            {
+                var subject = String.Format("Message from {0} ({1})", contact.Name, contact.Email);
+
+                SendEmail(contact.Email, _settings.Value.Email, subject, contact.Message);
+            }
+            catch (Exception e)
+            {
+                ModelState.AddModelError(string.Empty, e.Message);
+
+                return View("Contact", contact);
+            }            
+
+            return Redirect("~/");
+        }
+
         [Route("/blog/{slug?}")]
         [HttpPost, Authorize, AutoValidateAntiforgeryToken]
         public async Task<IActionResult> UpdatePost(Post post)
@@ -159,6 +199,23 @@ namespace Miniblog.Core.Controllers
                         img.Attributes.Remove(fileNameNode);
                         post.Content = post.Content.Replace(match.Value, img.OuterXml);
                     }
+                }
+            }
+        }
+
+        private void SendEmail(string from, string to, string subject, string body)
+        {
+            using (SmtpClient smtpClient = new SmtpClient(_settings.Value.Smtp.Host, _settings.Value.Smtp.Port))
+            {
+                smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
+                smtpClient.EnableSsl = true;
+                smtpClient.UseDefaultCredentials = false;
+
+                smtpClient.Credentials = new System.Net.NetworkCredential(_settings.Value.Smtp.UserName, _settings.Value.Smtp.Password);
+
+                using (MailMessage mailMessage = new MailMessage(from, to, subject, body))
+                {
+                    smtpClient.Send(mailMessage);
                 }
             }
         }
