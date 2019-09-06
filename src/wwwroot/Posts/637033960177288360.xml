@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<post>
+  <title>About</title>
+  <slug>about</slug>
+  <pubDate>2017-09-06T19:50:59.101Z</pubDate>
+  <lastModified>2017-09-06T20:08:46.568Z</lastModified>
+  <excerpt>About me.</excerpt>
+  <content>&lt;p&gt;My name is Ryan Baxter. I'm a computer programmer, hobbyist writer, and proud father.&amp;nbsp; Much of my career experience has come from developing business applications and integrating software systems within the manufacturing sector.&amp;nbsp; I've been the team lead on global and domestic ERP, e-commerce, and factory automation projects. I'm a developer at heart with interests including SCM, software design patterns, and programming languages. I've a love of learning and passion for technology.&lt;/p&gt;
+&lt;p&gt;Dog's breakfast is an idiom meaning, "a confused mess or mixture".&amp;nbsp; It's a fitting title for the contents herein.&amp;nbsp; This blog is a hodgepodge of posts with topics including software development, tabletop game design, home brewing, and family.&amp;nbsp; I hope you like it.&amp;nbsp; Leave comments or contact me directly.&amp;nbsp; I'd love to hear from you.&lt;/p&gt;
+&lt;p&gt;Stay tuned.&amp;nbsp; I'll be adding some of my works shortly.&lt;/p&gt;</content>
+  <ispublished>true</ispublished>
+  <categories>
+    <category>about</category>
+  </categories>
+  <comments></comments>
+</post>

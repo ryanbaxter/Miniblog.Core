@@ -26,13 +26,6 @@ namespace Miniblog.Core.Controllers
             _manifest = manifest;
         }
 
-        [Route("/about")]
-        [OutputCache(Profile = "default")]
-        public IActionResult About()
-        {
-            return View("~/Views/Blog/About.cshtml");
-        }
-
         [Route("/contact")]
         [OutputCache(Profile = "default")]
         public IActionResult Contact()
