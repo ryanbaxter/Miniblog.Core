@@ -108,6 +108,7 @@ namespace Miniblog.Core.Services
                                 new XElement("excerpt", post.Excerpt),
                                 new XElement("content", post.Content),
                                 new XElement("ispublished", post.IsPublished),
+                                new XElement("showComments", post.ShowComments),
                                 new XElement("categories", string.Empty),
                                 new XElement("comments", string.Empty)
                             ));
@@ -213,10 +214,16 @@ namespace Miniblog.Core.Services
                     PubDate = DateTime.Parse(ReadValue(doc, "pubDate")),
                     LastModified = DateTime.Parse(ReadValue(doc, "lastModified", DateTime.UtcNow.ToString(CultureInfo.InvariantCulture))),
                     IsPublished = bool.Parse(ReadValue(doc, "ispublished", "true")),
+                    ShowComments = bool.Parse(ReadValue(doc, "showComments", "true")),
                 };
 
                 LoadCategories(post, doc);
-                LoadComments(post, doc);
+
+                if (post.ShowComments)
+                {
+                    LoadComments(post, doc);
+                }
+                
                 _cache.Add(post);
             }
         }

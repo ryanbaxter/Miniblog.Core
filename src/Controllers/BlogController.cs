@@ -143,6 +143,7 @@ namespace Miniblog.Core.Controllers
             existing.Title = post.Title.Trim();
             existing.Slug = !string.IsNullOrWhiteSpace(post.Slug) ? post.Slug.Trim() : Models.Post.CreateSlug(post.Title);
             existing.IsPublished = post.IsPublished;
+            existing.ShowComments = post.ShowComments;
             existing.Content = post.Content.Trim();
             existing.Excerpt = post.Excerpt.Trim();
 
