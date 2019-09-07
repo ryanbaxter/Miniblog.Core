@@ -12,14 +12,14 @@
 
     <div asp-validation-summary="All"></div>
 
-    <label asp-for="@Model.Message" class="label">Message</label>
-    <textarea asp-for="@Model.Message" required rows="3" placeholder="Enter your message here..." aria-describedby="desc_message"></textarea>
-
     <label asp-for="@Model.Name" class="label">Name</label>
     <input asp-for="@Model.Name" required placeholder="Your name" aria-describedby="desc_name" />
 
     <label asp-for="@Model.Email" class="label">E-mail</label>
     <input asp-for="@Model.Email" required placeholder="Example: mary@gmail.com" aria-describedby="desc_email" />
+
+    <label asp-for="@Model.Message" class="label">Message</label>
+    <textarea asp-for="@Model.Message" required rows="3" placeholder="Enter your message here..." aria-describedby="desc_message"></textarea>
     <br />
 
     <input type="submit" value="Send message" title="Send the message" />
