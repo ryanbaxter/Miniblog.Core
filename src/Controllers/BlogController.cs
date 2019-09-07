@@ -30,6 +30,8 @@ namespace Miniblog.Core.Controllers
         [OutputCache(Profile = "default")]
         public IActionResult Contact()
         {
+            ViewData["Title"] = "Contact";
+            ViewData["Description"] = _manifest.Name;
             return View("~/Views/Blog/Contact.cshtml");
         }
 
