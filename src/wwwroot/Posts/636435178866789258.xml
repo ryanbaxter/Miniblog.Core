@@ -3,7 +3,7 @@
   <title>Welcome to your new blog</title>
   <slug>welcome-to-your-new-blog</slug>
   <pubDate>2017-10-13T22:59:01.000Z</pubDate>
-  <lastModified>2019-08-24T15:44:04.013Z</lastModified>
+  <lastModified>2019-09-06T21:05:50.022Z</lastModified>
   <excerpt>Congratulations on your new blog</excerpt>
   <content>&lt;p&gt;Congratulations on installing your new blog!&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://github.com/madskristensen/Miniblog.Core"&gt;Miniblog.Core&lt;/a&gt; is optimized to give your visitors a fantastic reading experience on all types of devices. It is built to be fast and responsive so your visitors never have to wait for the content to load.&lt;/p&gt;
@@ -63,7 +63,7 @@
 &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;p&gt;Enjoy!&lt;/p&gt;</content>
-  <ispublished>false</ispublished>
+  <ispublished>true</ispublished>
   <categories>
     <category>welcome</category>
     <category>miniblog</category>

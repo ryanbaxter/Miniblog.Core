@@ -25,17 +25,17 @@ body {
 }
 
 .siteheader {
-    text-align: right;
+    text-align: left;
     padding: .8em 1.5em 2em 1.5em;
 
     p {
-        font-size: 2em;
+        font-size: 2em;        
     }
 
     a {
         color: $text_color;
         text-decoration: none;
-    }
+    }    
 
     nav {
         text-align: center;
@@ -46,14 +46,16 @@ body {
             padding: 0;
         }
 
-        li {
+        li {           
             display: inline-block;
             padding: 0 1.5em 0 1.5em;
         }
 
         a {
+            color: lighten($text_color, 45%);
+
             &:hover {
-                text-decoration: underline;
+                color: $text_color;
             }
         }
     }
