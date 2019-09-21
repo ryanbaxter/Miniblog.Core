@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Miniblog.Core.Models;
 using System;
 using System.Collections.Generic;
@@ -21,11 +22,19 @@ namespace Miniblog.Core.Services
 
         private readonly List<Post> _cache = new List<Post>();
         private readonly IHttpContextAccessor _contextAccessor;
-        private readonly string _folder;
+        private readonly string _folder;        
 
-        public FileBlogService(IHostingEnvironment env, IHttpContextAccessor contextAccessor)
+        public FileBlogService(IConfiguration config, IHostingEnvironment env, IHttpContextAccessor contextAccessor)
         {
-            _folder = Path.Combine(env.WebRootPath, POSTS);
+            if (!string.IsNullOrEmpty(config["blog:filePath"]))
+            {
+                _folder = Path.Combine(config["blog:filePath"], POSTS);
+            }
+            else
+            {
+                _folder = Path.Combine(env.WebRootPath, POSTS);
+            }
+            
             _contextAccessor = contextAccessor;
 
             Initialize();
