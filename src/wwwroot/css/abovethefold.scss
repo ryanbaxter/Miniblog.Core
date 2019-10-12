@@ -26,38 +26,116 @@ body {
 
 .siteheader {
     text-align: left;
-    padding: .8em 1.5em 2em 1.5em;
+    padding: .8em 0 1.4em 0;
 
     p {
-        font-size: 2em;        
+        font-size: 2em;
     }
-
+    
     a {
         color: $text_color;
-        text-decoration: none;
-    }    
+        text-decoration: none;        
+    }
 
-    nav {
+    nav {        
         text-align: center;
 
         ul {
             list-style: none;
             margin: 0;
-            padding: 0;
+            padding-left: 0;
         }
 
-        li {           
+        li {
             display: inline-block;
-            padding: 0 1.5em 0 1.5em;
+            padding: 0 1.4em 0 1.4em;
+            position: relative;
+            transition-duration: 0.5s;
         }
 
-        a {
+        li a {
             color: lighten($text_color, 45%);
 
             &:hover {
                 color: $text_color;
             }
         }
+
+        li img {
+            height: 16px;
+        }
+
+        li:hover {
+            cursor: pointer;
+        }
+
+        ul li ul {
+            visibility: hidden;
+            opacity: 0;
+            min-width: 5rem;
+            position: absolute;
+            transition: all 0.5s ease;
+            left: 0;
+            display: none;
+        }
+
+        ul li:hover > ul,
+        ul li ul:hover,
+        ul li ul:focus {
+            visibility: visible;
+            opacity: 1;
+            display: block;
+        }
+
+        ul li ul li {
+            clear: both;
+            width: 100%;
+        }
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        padding-bottom: 0.6em;
+    }
+
+    .left, .right {
+        flex-basis: auto;
+    }
+
+    .right {
+        padding-left: .4em;
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes spin-faster {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    50% {
+        transform: rotate(720deg);
+    }
+
+    100% {
+        transform: rotate(1080deg);
+    }
+}
+
+.spin {
+    &:hover {
+        animation: spin 2s linear infinite;        
+        animation: spin-faster 4s linear infinite;
     }
 }
 
