@@ -31,13 +31,13 @@ body {
     p {
         font-size: 2em;
     }
-    
+
     a {
         color: $text_color;
-        text-decoration: none;        
+        text-decoration: none;
     }
 
-    nav {        
+    nav {
         text-align: center;
 
         ul {
@@ -51,6 +51,7 @@ body {
             padding: 0 1.4em 0 1.4em;
             position: relative;
             transition-duration: 0.5s;
+            white-space: nowrap;
         }
 
         li a {
@@ -61,7 +62,7 @@ body {
             }
         }
 
-        li img {            
+        li img {
             width: 1rem;
         }
 
