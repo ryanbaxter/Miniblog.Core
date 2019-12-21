@@ -11,6 +11,9 @@ namespace Miniblog.Core.Models
         public string Email { get; set; }
 
         [Required]
-        public string Message { get; set; }
+        public string Message { get; set; } 
+
+        [Required]
+        public string CaptchaToken { get; set; }
     }
 }

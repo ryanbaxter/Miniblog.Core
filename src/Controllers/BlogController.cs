@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
+using Newtonsoft.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -104,15 +107,24 @@ namespace Miniblog.Core.Controllers
 
         [Route("/contact")]
         [HttpPost]
-        public IActionResult Contact(Contact contact)
+        public async Task<IActionResult> Contact(Contact contact)
         {
             if (!ModelState.IsValid)
             {
                 return View("Contact", contact);
-            }
+            }            
 
             try
             {
+                var isCaptchaValid = await IsCaptchaValid(contact.CaptchaToken);
+
+                if (!isCaptchaValid)
+                {
+                    ModelState.AddModelError(string.Empty, "Robot detected!");
+
+                    return View("Contact", contact);
+                }
+
                 var subject = String.Format("Message from {0} ({1})", contact.Name, contact.Email);
 
                 SendEmail(contact.Email, _settings.Value.Email, subject, contact.Message);
@@ -213,6 +225,27 @@ namespace Miniblog.Core.Controllers
                 {
                     smtpClient.Send(mailMessage);
                 }
+            }
+        }
+
+        private async Task<bool> IsCaptchaValid(string response)
+        {
+            using (var client = new HttpClient())
+            {
+                var values = new Dictionary<string, string>
+                {
+                    { "secret", _settings.Value.Captcha.SecretKey },
+                    { "response", response },
+                    { "remoteip", HttpContext.Connection.RemoteIpAddress.ToString() }
+                };
+
+                var content = new FormUrlEncodedContent(values);
+                var verify = await client.PostAsync(_settings.Value.Captcha.EndPoint, content);
+                var captchaResponse = await verify.Content.ReadAsStringAsync();
+                var captchaResult = JsonConvert.DeserializeObject<CaptchaResponse>(captchaResponse);
+                return captchaResult.Success
+                    && captchaResult.Action == "contact"
+                    && captchaResult.Score > 0.5;
             }
         }
 
