@@ -26,5 +26,6 @@
         public string EndPoint { get; set; }
         public string SiteKey { get; set; }
         public string SecretKey { get; set; }
+        public float Score { get; set; }
     }
 }

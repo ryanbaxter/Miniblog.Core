@@ -127,7 +127,7 @@ namespace Miniblog.Core.Controllers
 
                 var subject = String.Format("Message from {0} ({1})", contact.Name, contact.Email);
 
-                SendEmail(contact.Email, _settings.Value.Email, subject, contact.Message);
+                await SendEmail(contact.Email, _settings.Value.Email, subject, contact.Message);
             }
             catch (Exception e)
             {
@@ -211,7 +211,7 @@ namespace Miniblog.Core.Controllers
             }
         }
 
-        private void SendEmail(string from, string to, string subject, string body)
+        private async Task SendEmail(string from, string to, string subject, string body)
         {
             using (SmtpClient smtpClient = new SmtpClient(_settings.Value.Smtp.Host, _settings.Value.Smtp.Port))
             {
@@ -223,14 +223,14 @@ namespace Miniblog.Core.Controllers
 
                 using (MailMessage mailMessage = new MailMessage(from, to, subject, body))
                 {
-                    smtpClient.Send(mailMessage);
+                    await smtpClient.SendMailAsync(mailMessage);
                 }
             }
         }
 
         private async Task<bool> IsCaptchaValid(string response)
         {
-            using (var client = new HttpClient())
+            using (var httpClient = new HttpClient())
             {
                 var values = new Dictionary<string, string>
                 {
@@ -238,14 +238,15 @@ namespace Miniblog.Core.Controllers
                     { "response", response },
                     { "remoteip", HttpContext.Connection.RemoteIpAddress.ToString() }
                 };
-
-                var content = new FormUrlEncodedContent(values);
-                var verify = await client.PostAsync(_settings.Value.Captcha.EndPoint, content);
+               
+                var verify = await httpClient.PostAsync(_settings.Value.Captcha.EndPoint, new FormUrlEncodedContent(values));
+                
                 var captchaResponse = await verify.Content.ReadAsStringAsync();
                 var captchaResult = JsonConvert.DeserializeObject<CaptchaResponse>(captchaResponse);
+                
                 return captchaResult.Success
                     && captchaResult.Action == "contact"
-                    && captchaResult.Score > 0.5;
+                    && captchaResult.Score > _settings.Value.Captcha.Score;
             }
         }
 
