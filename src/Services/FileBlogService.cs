@@ -2,6 +2,7 @@ namespace Miniblog.Core.Services
 {
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Configuration;
 
     using Miniblog.Core.Models;
 
@@ -33,14 +34,22 @@ namespace Miniblog.Core.Services
                 "Usage",
                 "SecurityIntelliSenseCS:MS Security rules violation",
                 Justification = "Path not derived from user input.")]
-        public FileBlogService(IWebHostEnvironment env, IHttpContextAccessor contextAccessor)
+        public FileBlogService(IConfiguration config, IWebHostEnvironment env, IHttpContextAccessor contextAccessor)
         {
             if (env is null)
             {
                 throw new ArgumentNullException(nameof(env));
             }
 
-            this.folder = Path.Combine(env.WebRootPath, POSTS);
+            if (!string.IsNullOrEmpty(config["blog:filePath"]))
+            {
+                this.folder = Path.Combine(config["blog:filePath"], POSTS);
+            }
+            else
+            {
+                this.folder = Path.Combine(env.WebRootPath, POSTS);
+            }
+
             this.contextAccessor = contextAccessor;
 
             this.Initialize();

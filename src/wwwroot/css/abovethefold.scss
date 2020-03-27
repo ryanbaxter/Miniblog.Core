@@ -24,15 +24,9 @@ body {
     color: $text_color;
 }
 
-.container {
-    max-width: 750px;
-    margin: 0 auto;
-    padding: 0 1.5em;
-}
-
 .siteheader {
-    text-align: right;
-    padding: .8em 1.5em 2em 1.5em;
+    text-align: left;
+    padding: .8em 0 1.4em 0;
 
     p {
         font-size: 2em;
@@ -41,6 +35,134 @@ body {
     a {
         color: $text_color;
         text-decoration: none;
+    }
+
+    nav {
+        text-align: center;
+
+        ul {
+            list-style: none;
+            margin: 0;
+            padding-left: 0;
+        }
+
+        li {
+            display: inline-block;
+            padding: 0 1.4em 0 1.4em;
+            position: relative;
+            transition-duration: 0.5s;
+            white-space: nowrap;
+        }
+
+        li a {
+            color: lighten($text_color, 45%);
+
+            &:hover {
+                color: $text_color;
+            }
+        }
+
+        li img {
+            width: 1rem;
+        }
+
+        li:hover {
+            cursor: pointer;
+        }
+
+        ul li ul {
+            visibility: hidden;
+            opacity: 0;
+            min-width: 5rem;
+            position: absolute;
+            transition: all 0.5s ease;
+            left: 0;
+            display: none;
+        }
+
+        ul li:hover > ul,
+        ul li ul:hover,
+        ul li ul:focus {
+            visibility: visible;
+            opacity: 1;
+            display: block;
+        }
+
+        ul li ul li {
+            clear: both;
+            width: 100%;
+        }
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        padding-bottom: 0.6em;
+    }
+
+    .left, .right {
+        flex-basis: auto;
+    }
+
+    .right {
+        padding-left: .4em;
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes spin-faster {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    50% {
+        transform: rotate(720deg);
+    }
+
+    100% {
+        transform: rotate(1080deg);
+    }
+}
+
+.spin {
+    &:hover {
+        animation: spin 2s linear infinite;        
+        animation: spin-faster 4s linear infinite;
+    }
+}
+
+.container {
+    max-width: 750px;
+    margin: 0 auto;
+    padding: 0 1.5em;
+}
+
+.social {
+    text-align: right;
+
+    a {
+        display: inline-block;
+        padding: .7em;
+        line-height: 0;
+        margin-bottom: 2em;
+    }
+
+    path {
+        fill: gray;
+    }
+
+    svg {
+        width: 24px;
+        height: 24px;        
     }
 }
 

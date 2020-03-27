@@ -1,12 +1,16 @@
 namespace Miniblog.Core
 {
+    using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Rewrite;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
+    using Microsoft.Extensions.FileProvider;
     using Microsoft.Extensions.Hosting;
 
     using Miniblog.Core.Services;
@@ -17,6 +21,8 @@ namespace Miniblog.Core
     using WebMarkupMin.Core;
 
     using WilderMinds.MetaWeblog;
+
+    using Sysem.IO;
 
     using IWmmLogger = WebMarkupMin.Core.Loggers.ILogger;
     using MetaWeblogService = Miniblog.Core.Services.MetaWeblogService;
@@ -69,6 +75,16 @@ namespace Miniblog.Core
             if (this.Configuration.GetValue<bool>("forcessl"))
             {
                 app.UseHttpsRedirection();
+            }
+
+            if (!string.IsNullOrEmpty(Configuration["blog:filePath"]))
+            {
+                app.UseStaticFiles(new StaticFileOptions
+                {
+                    FileProvider = new PhysicalFileProvider(
+                    Path.Combine(Configuration["blog:filePath"], "Posts")),
+                    RequestPath = "/Posts"
+                });
             }
 
             app.UseMetaWeblog("/metaweblog");

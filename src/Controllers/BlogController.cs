@@ -7,9 +7,14 @@ namespace Miniblog.Core.Controllers
     using Miniblog.Core.Models;
     using Miniblog.Core.Services;
 
+    using Newtonsoft.Json;
+
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using System.Net.Http;
+    using System.Net.Mail;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using System.Xml;
@@ -267,6 +272,88 @@ namespace Miniblog.Core.Controllers
                     img.Attributes.Remove(fileNameNode);
                     post.Content = post.Content.Replace(match.Value, img.OuterXml, StringComparison.OrdinalIgnoreCase);
                 }
+            }
+        }
+
+        [Route("/contact")]
+        [OutputCache(Profile = "default")]
+        public IActionResult Contact()
+        {
+            ViewData["Title"] = "Contact";
+            ViewData["Description"] = _manifest.Name;
+            return View("~/Views/Blog/Contact.cshtml");
+        }
+
+        [Route("/contact")]
+        [HttpPost]
+        public async Task<IActionResult> Contact(Contact contact)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View("Contact", contact);
+            }            
+
+            try
+            {
+                var isCaptchaValid = await IsCaptchaValid(contact.CaptchaToken);
+
+                if (!isCaptchaValid)
+                {
+                    ModelState.AddModelError(string.Empty, "Robot detected!");
+
+                    return View("Contact", contact);
+                }
+
+                var subject = String.Format("Message from {0} ({1})", contact.Name, contact.Email);
+
+                await SendEmail(contact.Email, _settings.Value.Email, subject, contact.Message);
+            }
+            catch (Exception e)
+            {
+                ModelState.AddModelError(string.Empty, e.Message);
+
+                return View("Contact", contact);
+            }            
+
+            return Redirect("~/");
+        }
+
+        private async Task SendEmail(string from, string to, string subject, string body)
+        {
+            using (SmtpClient smtpClient = new SmtpClient(_settings.Value.Smtp.Host, _settings.Value.Smtp.Port))
+            {
+                smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
+                smtpClient.EnableSsl = true;
+                smtpClient.UseDefaultCredentials = false;
+
+                smtpClient.Credentials = new System.Net.NetworkCredential(_settings.Value.Smtp.UserName, _settings.Value.Smtp.Password);
+
+                using (MailMessage mailMessage = new MailMessage(from, to, subject, body))
+                {
+                    await smtpClient.SendMailAsync(mailMessage);
+                }
+            }
+        }
+
+        private async Task<bool> IsCaptchaValid(string response)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                var values = new Dictionary<string, string>
+                {
+                    { "secret", _settings.Value.Captcha.SecretKey },
+                    { "response", response },
+                    { "remoteip", HttpContext.Connection.RemoteIpAddress.ToString() }
+                };
+               
+                var verify = await httpClient.PostAsync(_settings.Value.Captcha.EndPoint, new FormUrlEncodedContent(values));
+                
+                var captchaResponse = await verify.Content.ReadAsStringAsync();
+                var captchaResult = JsonConvert.DeserializeObject<CaptchaResponse>(captchaResponse);
+                
+                return captchaResult.Success
+                    && captchaResult.Action == "contact"
+                    && captchaResult.Score > _settings.Value.Captcha.Score;
             }
         }
     }

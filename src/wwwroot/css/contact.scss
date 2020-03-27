@@ -1,0 +1,29 @@
+﻿label {
+    display: block;
+    margin-top: 1em;
+}
+
+input,
+textarea {
+    font: inherit;
+    border: 1px solid;
+    border-radius: 0; // Safari adds a radius to input fields
+    padding: 5px 0;
+    width: 100%;
+    -webkit-appearance: none;
+}
+
+input {
+    max-width: 400px;
+    text-indent: 5px;
+
+    &[type=submit] {
+        width: auto;
+        margin: 1em 0;
+        padding: 5px 10px;
+    }
+}
+
+textarea {
+    padding: 5px;
+}

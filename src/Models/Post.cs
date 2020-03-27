@@ -27,6 +27,8 @@ namespace Miniblog.Core.Models
 
         public DateTime LastModified { get; set; } = DateTime.UtcNow;
 
+        public bool ShowComments { get; set; } = true;       
+
         public DateTime PubDate { get; set; } = DateTime.UtcNow;
 
         public string Slug { get; set; } = string.Empty;

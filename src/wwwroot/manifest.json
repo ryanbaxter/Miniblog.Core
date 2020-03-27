@@ -1,7 +1,7 @@
 {
-  "name": "Miniblog.Core",
-  "short_name": "Miniblog.Core",
-  "description": "A short description of the blog.",
+  "name": "rcbaxter.net",
+  "short_name": "#dogsbreakfast",
+  "description": "Musings of a computer programmer, hobbyist writer, and proud father.",
   "icons": [
     {
       "src": "/img/icon192x192.png",
