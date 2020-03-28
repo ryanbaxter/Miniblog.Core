@@ -212,6 +212,7 @@ namespace Miniblog.Core.Controllers
             existing.Title = post.Title.Trim();
             existing.Slug = !string.IsNullOrWhiteSpace(post.Slug) ? post.Slug.Trim() : Models.Post.CreateSlug(post.Title);
             existing.IsPublished = post.IsPublished;
+            existing.ShowComments = post.ShowComments;
             existing.Content = post.Content.Trim();
             existing.Excerpt = post.Excerpt.Trim();
 
@@ -279,82 +280,91 @@ namespace Miniblog.Core.Controllers
         [OutputCache(Profile = "default")]
         public IActionResult Contact()
         {
-            ViewData["Title"] = "Contact";
-            ViewData["Description"] = _manifest.Name;
-            return View("~/Views/Blog/Contact.cshtml");
+            this.ViewData["Title"] = "Contact";
+            this.ViewData["Description"] = this.manifest.Name;
+
+            return this.View();
         }
 
         [Route("/contact")]
         [HttpPost]
         public async Task<IActionResult> Contact(Contact contact)
         {
-            if (!ModelState.IsValid)
+            if (contact is null)
             {
-                return View("Contact", contact);
-            }            
+                throw new ArgumentNullException(nameof(contact));
+            }
+
+            if (!this.ModelState.IsValid)
+            {
+                return this.View(contact);
+            }
 
             try
             {
-                var isCaptchaValid = await IsCaptchaValid(contact.CaptchaToken);
-
-                if (!isCaptchaValid)
+                if (!await this.IsCaptchaValid(contact.CaptchaToken).ConfigureAwait(false))
                 {
-                    ModelState.AddModelError(string.Empty, "Robot detected!");
+                    this.ModelState.AddModelError(string.Empty, "Robot detected!");
 
-                    return View("Contact", contact);
+                    return this.View(contact);
                 }
 
-                var subject = String.Format("Message from {0} ({1})", contact.Name, contact.Email);
-
-                await SendEmail(contact.Email, _settings.Value.Email, subject, contact.Message);
+                await this.SendEmail(contact.Email, this.settings.Value.Email, $"Message from {contact.Name} ({contact.Email})", contact.Message).ConfigureAwait(false);
             }
-            catch (Exception e)
+            catch (HttpRequestException httpRequestException)
             {
-                ModelState.AddModelError(string.Empty, e.Message);
+                this.ModelState.AddModelError(string.Empty, httpRequestException.Message);
 
-                return View("Contact", contact);
-            }            
+                return this.View(contact);
+            }
+            catch (SmtpException smtpException)
+            {
+                this.ModelState.AddModelError(string.Empty, smtpException.Message);
 
-            return Redirect("~/");
+                return this.View(contact);
+            }
+
+            return this.Redirect("/");
         }
 
         private async Task SendEmail(string from, string to, string subject, string body)
         {
-            using (SmtpClient smtpClient = new SmtpClient(_settings.Value.Smtp.Host, _settings.Value.Smtp.Port))
+            using var smtpClient = new SmtpClient(this.settings.Value.Smtp.Host, this.settings.Value.Smtp.Port)
             {
-                smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
-                smtpClient.EnableSsl = true;
-                smtpClient.UseDefaultCredentials = false;
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                EnableSsl = this.settings.Value.Smtp.EnableSsl,
+                UseDefaultCredentials = false,
 
-                smtpClient.Credentials = new System.Net.NetworkCredential(_settings.Value.Smtp.UserName, _settings.Value.Smtp.Password);
+                Credentials = new System.Net.NetworkCredential(this.settings.Value.Smtp.UserName, this.settings.Value.Smtp.Password)
+            };
 
-                using (MailMessage mailMessage = new MailMessage(from, to, subject, body))
-                {
-                    await smtpClient.SendMailAsync(mailMessage);
-                }
-            }
+            using var mailMessage = new MailMessage(from, to, subject, body);
+
+            await smtpClient.SendMailAsync(mailMessage).ConfigureAwait(false);
         }
 
         private async Task<bool> IsCaptchaValid(string response)
         {
-            using (var httpClient = new HttpClient())
+            using var httpClient = new HttpClient();
+
+            var values = new Dictionary<string, string>
             {
-                var values = new Dictionary<string, string>
-                {
-                    { "secret", _settings.Value.Captcha.SecretKey },
-                    { "response", response },
-                    { "remoteip", HttpContext.Connection.RemoteIpAddress.ToString() }
-                };
-               
-                var verify = await httpClient.PostAsync(_settings.Value.Captcha.EndPoint, new FormUrlEncodedContent(values));
-                
-                var captchaResponse = await verify.Content.ReadAsStringAsync();
-                var captchaResult = JsonConvert.DeserializeObject<CaptchaResponse>(captchaResponse);
-                
-                return captchaResult.Success
-                    && captchaResult.Action == "contact"
-                    && captchaResult.Score > _settings.Value.Captcha.Score;
-            }
+                { "secret", this.settings.Value.Captcha.SecretKey },
+                { "response", response },
+                { "remoteip", this.HttpContext.Connection.RemoteIpAddress.ToString() }
+            };
+
+            using var content = new FormUrlEncodedContent(values);
+
+            var httpResponseMessage = await httpClient.PostAsync(new Uri(this.settings.Value.Captcha.EndPoint), content).ConfigureAwait(false);
+            httpResponseMessage.EnsureSuccessStatusCode();
+
+            var captchaResponse = await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var captchaResult = JsonConvert.DeserializeObject<CaptchaResponse>(captchaResponse);
+
+            return captchaResult.Success
+                && captchaResult.Action == "contact"
+                && captchaResult.Score > this.settings.Value.Captcha.Score;
         }
     }
 }

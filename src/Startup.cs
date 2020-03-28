@@ -1,16 +1,13 @@
 namespace Miniblog.Core
 {
-    using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Rewrite;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
-    using Microsoft.Extensions.FileProvider;
+    using Microsoft.Extensions.FileProviders;
     using Microsoft.Extensions.Hosting;
 
     using Miniblog.Core.Services;
@@ -22,7 +19,7 @@ namespace Miniblog.Core
 
     using WilderMinds.MetaWeblog;
 
-    using Sysem.IO;
+    using System.IO;
 
     using IWmmLogger = WebMarkupMin.Core.Loggers.ILogger;
     using MetaWeblogService = Miniblog.Core.Services.MetaWeblogService;
@@ -77,12 +74,12 @@ namespace Miniblog.Core
                 app.UseHttpsRedirection();
             }
 
-            if (!string.IsNullOrEmpty(Configuration["blog:filePath"]))
+            if (!string.IsNullOrEmpty(this.Configuration["blog:filePath"]))
             {
                 app.UseStaticFiles(new StaticFileOptions
                 {
                     FileProvider = new PhysicalFileProvider(
-                    Path.Combine(Configuration["blog:filePath"], "Posts")),
+                    Path.Combine(this.Configuration["blog:filePath"], "Posts")),
                     RequestPath = "/Posts"
                 });
             }

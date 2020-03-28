@@ -36,6 +36,11 @@ namespace Miniblog.Core.Services
                 Justification = "Path not derived from user input.")]
         public FileBlogService(IConfiguration config, IWebHostEnvironment env, IHttpContextAccessor contextAccessor)
         {
+            if (config is null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
             if (env is null)
             {
                 throw new ArgumentNullException(nameof(env));

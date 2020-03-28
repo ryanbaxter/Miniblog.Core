@@ -1,19 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace Miniblog.Core.Models
 {
     public class Contact
     {
-        [Required]
-        public string Name { get; set; }
+        [Required(AllowEmptyStrings = false)]
+        public string Name { get; set; } = string.Empty;
 
-        [Required]
-        public string Email { get; set; }
+        [Required, EmailAddress]
+        public string Email { get; set; } = string.Empty;
 
-        [Required]
-        public string Message { get; set; } 
+        [Required(AllowEmptyStrings = false)]
+        public string Message { get; set; } = string.Empty;
 
-        [Required]
-        public string CaptchaToken { get; set; }
+        [Required(AllowEmptyStrings = false)]
+        public string CaptchaToken { get; set; } = string.Empty;
     }
 }

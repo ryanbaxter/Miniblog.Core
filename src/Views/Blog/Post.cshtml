@@ -1,4 +1,4 @@
-﻿@model Post
+@model Post
 @inject IOptionsSnapshot<BlogSettings> settings
 @{
     ViewData[Constants.Title] = Model.Title;
@@ -67,7 +67,7 @@
     if (Model.ShowComments)
     {
         await Html.RenderPartialAsync("Comments");
-    }    
+    }
 
     @section Preload {
         @* This lazy loads the stylesheet in a non-render blocking way *@
