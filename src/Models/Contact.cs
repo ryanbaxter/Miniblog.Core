@@ -1,7 +1,7 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace Miniblog.Core.Models
 {
+    using System.ComponentModel.DataAnnotations;
+
     public class Contact
     {
         [Required(AllowEmptyStrings = false)]
