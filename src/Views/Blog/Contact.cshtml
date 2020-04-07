@@ -30,7 +30,7 @@
     <input asp-for="@Model.Email" required placeholder="Example: mary@gmail.com" aria-describedby="desc_email" />
 
     <label asp-for="@Model.Message" class="label">Message</label>
-    <textarea asp-for="@Model.Message" required rows="3" placeholder="Enter your message here..." aria-describedby="desc_message"></textarea>
+    <textarea asp-for="@Model.Message" required rows="5" cols="100" placeholder="Enter your message here..." aria-describedby="desc_message"></textarea>
     <br />
 
     <input asp-for="@Model.CaptchaToken" type="hidden" />
